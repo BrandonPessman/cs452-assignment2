@@ -139,8 +139,6 @@ int main()
             totalPackets++;
         }
 
-        char packet[totalPackets][packetSize];
-
         cout << "================================" << endl;
         // Send packet size first
         cout << "Packet Size: " << packetSize << endl;
@@ -151,6 +149,7 @@ int main()
         cout << "Total Packets: " << totalPackets << endl;
         cout << "================================" << endl;
 
+        char packet[packetSize];
         for (int i = 0; i < totalPackets; i++)
         {
             int t = packetSize;
@@ -160,23 +159,23 @@ int main()
             }
             for (int j = 0; j < t; j++)
             {
-                packet[i][j] = (char)fgetc(pFile);
+                packet[j] = (char)fgetc(pFile);
             }
 
             // Encrypt Packet
-            xorPacket(packet[i], thekey);
+            xorPacket(packet, thekey);
 
             // Print Packet
-            printPacket(packet[i], numPackets, 's');
+            printPacket(packet, numPackets, 's');
 
             // Write Packet
-            write(sockfd, packet[i], t);
+            write(sockfd, packet, t);
 
             numPackets++;
         }
 
         cout << "Send Success!" << endl;
-        //write(sockfd, "", 0);
+        write(sockfd, "", 0);
 
         // MD5 Hash
         cout << "MD5: " << endl;
@@ -261,17 +260,17 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get first packet
-        char packet[totalPackets][packetSize];
-        valread = read(client_sock, &packet[0], packetSize);
+        char packet[packetSize];
+        valread = read(client_sock, packet, packetSize);
 
         // Print first packet
-        printPacket(packet[0], numPackets, 'r');
+        printPacket(packet, numPackets, 'r');
 
         // Decrypt First Packet
-        xorPacket(packet[0], thekey);
+        xorPacket(packet, thekey);
 
         // Write First Packet to File
-        fwrite(packet[0], 1, packetSize, pFile);
+        fwrite(packet, 1, packetSize, pFile);
 
         numPackets++;
 
