@@ -28,8 +28,6 @@ void xorPacket(char packet[], char key[])
     {
         packet[i] = packet[i] ^ key[i % strlen(key)];
     }
-
-    return packet;
 }
 
 void printPacket(char packet[], int index, char type)
