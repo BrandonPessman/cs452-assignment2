@@ -80,19 +80,18 @@ int main()
         int totalPackets = 0;
         int leftOverPacket = 0;
         int numPackets = 0;
-        char thekey[] = "thekey";
 
         // Gather information
         //cout << "Connect to IP address: ";
         //cin >> ip;
         //cout << "Port #: ";
         //cin >> port;
-        //cout << "File to be sent: ";
-        //cin >> sendFile;
+        cout << "File to be sent: ";
+        cin >> sendFile;
         cout << "Pkt size: ";
         cin >> packetSize;
-        //cout << "Enter encryption key: ";
-        //cin >> encryptKey;
+        cout << "Enter encryption key: ";
+        cin >> encryptKey;
 
         // Client address initialization
         client_addr.sin_family = AF_INET;
@@ -116,10 +115,9 @@ int main()
         }
 
         // Get File
-        FILE *pFile = fopen("/tmp/2M", "r");
+        FILE *pFile = fopen(sendFile, "r");
         fseek(pFile, 0, SEEK_END);
         long fileSize = ftell(pFile);
-        cout << "File Size: " << fileSize << " bytes." << endl;
         rewind(pFile);
 
         // Calculate Packets from file size
@@ -173,7 +171,7 @@ int main()
             }
 
             // Encrypt Packet
-            xorPacket(packet, thekey, t);
+            xorPacket(packet, encryptKey, t);
 
             // Print Packet
             if (numPackets == 0 || numPackets == 1 || numPackets == totalPackets - 2 || numPackets == totalPackets - 1)
@@ -193,7 +191,7 @@ int main()
 
         // MD5 Hash
         cout << "MD5: " << endl;
-        system("md5sum /tmp/2M");
+        system("md5sum " + sendFile);
 
         // Close the Socket
         close(sockfd);
@@ -217,17 +215,16 @@ int main()
         int valread;
         int numPackets = 0;
         int totalPackets = 0;
-        char thekey[] = "thekey";
 
         // Gather information
         //cout << "Connect to IP address: ";
         //cin >> ip;
         //cout << "Port #: ";
         //cin >> port;
-        //cout << "Save file to: ";
-        //cin >> saveFile;
-        //cout << "Enter encryption key: ";
-        //cin >> encryptKey;
+        cout << "Save file to: ";
+        cin >> saveFile;
+        cout << "Enter encryption key: ";
+        cin >> encryptKey;
 
         // Server address initialization
         serv_addr.sin_family = AF_INET;
@@ -261,7 +258,7 @@ int main()
 
         // Open a file
         FILE *pFile;
-        pFile = fopen("/tmp/pessman-2M", "w");
+        pFile = fopen(saveFile, "w");
 
         // Get Packet Size
         char data_packetSize[PACKET_MAX_SIZE];
@@ -293,7 +290,7 @@ int main()
             }
 
             // Decrypt the Packet
-            xorPacket(packet, thekey, sz);
+            xorPacket(packet, encryptKey, sz);
 
             char packetWrite[sz];
             for (int i = 0; i < sz; i++)
@@ -314,7 +311,7 @@ int main()
 
         // MD5 Hash
         cout << "MD5: " << endl;
-        system("md5sum /tmp/pessman-2M");
+        system("md5sum " + saveFile);
 
         // Close socket
         close(client_sock);
