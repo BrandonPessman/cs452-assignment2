@@ -139,6 +139,7 @@ int main()
         // Convert t to 4 byte number and add to packet
         char packetSizeToSend[4 + sizeof(char)];
         sprintf(packetSizeToSend, "%d", 4);
+
         // Send Size
         write(sockfd, packetSizeToSend, 4);
 
@@ -255,6 +256,7 @@ int main()
         char data[4];
         read(client_sock, data, 4);
         maxPacketSize = atoi(data);
+        cout << "Max Size: " << maxPacketSize << endl;
 
         char packet[maxPacketSize + 4];
         bzero(packet, maxPacketSize + 4);
