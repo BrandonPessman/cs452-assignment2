@@ -30,11 +30,8 @@ void xorPacket(char packet[], char key[])
     }
 }
 
-void printPacket(char packet[], int index, char type)
+void printPacket(char packet[], int index, char type, int packetSize)
 {
-    // Get size
-    int length = strlen(packet);
-
     // Sent packet
     if (type == 's')
     {
@@ -51,8 +48,8 @@ void printPacket(char packet[], int index, char type)
     printf("%02X", packet[0]);
     printf("%02X", packet[1]);
     cout << " ... ";
-    printf("%02X", packet[length - 2]);
-    printf("%02X\0", packet[length - 1]);
+    printf("%02X", packet[packetSize - 2]);
+    printf("%02X", packet[packetSize - 1]);
     cout << endl;
 }
 
@@ -153,15 +150,16 @@ int main()
             }
 
             // Encrypt Packet
-            xorPacket(packet, thekey);
+            //xorPacket(packet, thekey);
 
             // Print Packet
-            printPacket(packet, numPackets, 's');
+            printPacket(packet, numPackets, 's', packetSize);
 
             // Write Packet
             write(sockfd, packet, t);
-
+    
             numPackets++;
+            bzero(packet, packetSize);
         }
 
         cout << "Send Success!" << endl;
@@ -240,20 +238,22 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         char packet[20];
+        bzero(packet, 20);
         // // Read all the packets
         while ((valread = read(client_sock, packet, packetSize)) > 0)
         {
             // Print Packet
-            printPacket(packet, numPackets, 'r');
+            printPacket(packet, numPackets, 'r', 20);
 
             // Decrypt the Packet
-            xorPacket(packet, thekey);
+            //xorPacket(packet, thekey);
 
             // Write to file
             fwrite(packet, 1, packetSize, pFile);
 
             numPackets++;
             totalPackets--;
+            bzero(packet, 20);
         }
 
         // Recieve Success
