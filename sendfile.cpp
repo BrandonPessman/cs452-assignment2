@@ -176,7 +176,10 @@ int main()
             xorPacket(packet, thekey, t);
 
             // Print Packet
-            printPacket(packet, numPackets, 's', t);
+            if (numPackets == 0 || numPackets == 1 || numPackets == totalPackets - 2 || numPackets == totalPackets - 1)
+            {
+                printPacket(packet, numPackets, 's', t);
+            }
 
             // Write Packet
             write(sockfd, packet, t + PACKET_MAX_SIZE);
@@ -269,14 +272,12 @@ int main()
         char data_totalPackets[TOTAL_PACKET_MAX_SIZE];
         read(client_sock, data_totalPackets, TOTAL_PACKET_MAX_SIZE);
         totalPackets = atoi(data_totalPackets);
-        cout << "Total Packets: " << totalPackets << endl;
 
         char packet[maxPacketSize + PACKET_MAX_SIZE];
         bzero(packet, maxPacketSize + PACKET_MAX_SIZE);
         // Read all the packets
         while ((valread = read(client_sock, packet, maxPacketSize + PACKET_MAX_SIZE)) > 0)
         {
-            cout << "Total Packets: " << totalPackets << endl;
             // Get Size from Header
             char packetWriteSize[PACKET_MAX_SIZE];
             for (int i = 0; i < PACKET_MAX_SIZE; i++)
