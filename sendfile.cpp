@@ -9,6 +9,8 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 
+#define PACKET_MAX_SIZE 4;
+
 using namespace std;
 
 /*
@@ -23,7 +25,7 @@ void xorPacket(char *packet, char key[], int packetSize)
     // Encrypt or decrypt
     for (int i = 0; i < packetSize; i++)
     {
-        packet[i + 4] = packet[i + 4] ^ key[i % strlen(key)];
+        packet[i + PACKET_MAX_SIZE] = packet[i + PACKET_MAX_SIZE] ^ key[i % strlen(key)];
     }
 }
 
@@ -42,11 +44,11 @@ void printPacket(char packet[], int index, char type, int packetSize)
     }
 
     // Printing
-    printf("%02X\0", packet[0 + 4]);
-    printf("%02X\0", packet[1 + 4]);
+    printf("%02X\0", packet[0 + PACKET_MAX_SIZE]);
+    printf("%02X\0", packet[1 + PACKET_MAX_SIZE]);
     cout << " ... ";
-    printf("%02X\0", packet[packetSize + 4 - 2]);
-    printf("%02X\0", packet[packetSize + 4 - 1]);
+    printf("%02X\0", packet[packetSize + PACKET_MAX_SIZE - 2]);
+    printf("%02X\0", packet[packetSize + PACKET_MAX_SIZE - 1]);
     cout << endl;
 }
 
@@ -133,15 +135,17 @@ int main()
             totalPackets++;
         }
 
-        // Init Packet with 4 byte header
-        char packet[packetSize + 4];
+        // Init Packet with max packet byte header
+        char packet[packetSize + PACKET_MAX_SIZE];
 
-        // Convert t to 4 byte number and add to packet
-        char packetSizeToSend[4 + sizeof(char)];
+        // Convert t to max packet byte number and add to packet
+        char packetSizeToSend[PACKET_MAX_SIZE + sizeof(char)];
         sprintf(packetSizeToSend, "%d", packetSize);
 
         // Send Size
-        write(sockfd, packetSizeToSend, 4);
+        write(sockfd, packetSizeToSend, PACKET_MAX_SIZE);
+
+        // Send Total
 
         for (int i = 0; i < totalPackets; i++)
         {
@@ -152,14 +156,14 @@ int main()
             }
             for (int j = 0; j < t; j++)
             {
-                packet[j + 4] = (char)fgetc(pFile);
+                packet[j + PACKET_MAX_SIZE] = (char)fgetc(pFile);
             }
 
-            // Convert t to 4 byte number and add to packet
-            char sizeToSend[4 + sizeof(char)];
+            // Convert t to max packet byte number and add to packet
+            char sizeToSend[PACKET_MAX_SIZE + sizeof(char)];
             sprintf(sizeToSend, "%d", t);
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < PACKET_MAX_SIZE; i++)
             {
                 packet[i] = sizeToSend[i];
             }
@@ -171,10 +175,10 @@ int main()
             printPacket(packet, numPackets, 's', t);
 
             // Write Packet
-            write(sockfd, packet, t + 4);
+            write(sockfd, packet, t + PACKET_MAX_SIZE);
 
             numPackets++;
-            bzero(packet, packetSize + 4);
+            bzero(packet, packetSize + PACKET_MAX_SIZE);
         }
 
         cout << "Send Success!" << endl;
@@ -253,19 +257,19 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get Packet Size
-        char data[4];
-        read(client_sock, data, 4);
+        char data[PACKET_MAX_SIZE];
+        read(client_sock, data, PACKET_MAX_SIZE);
         maxPacketSize = atoi(data);
         cout << "Max Size: " << maxPacketSize << endl;
 
-        char packet[maxPacketSize + 4];
-        bzero(packet, maxPacketSize + 4);
+        char packet[maxPacketSize + PACKET_MAX_SIZE];
+        bzero(packet, maxPacketSize + PACKET_MAX_SIZE);
         // Read all the packets
-        while ((valread = read(client_sock, packet, maxPacketSize + 4)) > 0)
+        while ((valread = read(client_sock, packet, maxPacketSize + PACKET_MAX_SIZE)) > 0)
         {
             // Get Size from Header
-            char packetWriteSize[4];
-            for (int i = 0; i < 4; i++)
+            char packetWriteSize[PACKET_MAX_SIZE];
+            for (int i = 0; i < PACKET_MAX_SIZE; i++)
             {
                 packetWriteSize[i] = packet[i];
             }
@@ -280,13 +284,13 @@ int main()
             char packetWrite[sz];
             for (int i = 0; i < sz; i++)
             {
-                packetWrite[i] = packet[i + 4];
+                packetWrite[i] = packet[i + PACKET_MAX_SIZE];
             }
             fwrite(packetWrite, 1, sz, pFile);
 
             numPackets++;
             totalPackets--;
-            bzero(packet, maxPacketSize + 4);
+            bzero(packet, maxPacketSize + PACKET_MAX_SIZE);
         }
 
         // Recieve Success
