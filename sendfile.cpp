@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #define PACKET_MAX_SIZE 4
+#define TOTAL_PACKET_MAX_SIZE 4
 
 using namespace std;
 
@@ -146,6 +147,9 @@ int main()
         write(sockfd, packetSizeToSend, PACKET_MAX_SIZE);
 
         // Send Total
+        char totalPacketSizeToSend[TOTAL_PACKET_MAX_SIZE + sizeof(char)];
+        sprintf(totalPacketSizeToSend, "%d", totalPackets);
+        write(sockfd, totalPacketSizeToSend, TOTAL_PACKET_MAX_SIZE);
 
         for (int i = 0; i < totalPackets; i++)
         {
@@ -210,6 +214,7 @@ int main()
         int leftOverPacket = 0;
         int valread;
         int numPackets = 0;
+        int totalPackets = 0;
         char thekey[] = "thekey";
 
         // Gather information
@@ -257,10 +262,15 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get Packet Size
-        char data[PACKET_MAX_SIZE];
-        read(client_sock, data, PACKET_MAX_SIZE);
-        maxPacketSize = atoi(data);
-        cout << "Max Size: " << maxPacketSize << endl;
+        char data_packetSize[PACKET_MAX_SIZE];
+        read(client_sock, data_packetSize, PACKET_MAX_SIZE);
+        maxPacketSize = atoi(data_packetSize);
+
+        // Get total Packets
+        char data_totalPackets[TOTAL_PACKET_MAX_SIZE];
+        read(client_sock, data_totalPackets, TOTAL_PACKET_MAX_SIZE);
+        totalPackets = atoi(data_totalPackets);
+        cout << "Total Packets: " << totalPackets << endl;
 
         char packet[maxPacketSize + PACKET_MAX_SIZE];
         bzero(packet, maxPacketSize + PACKET_MAX_SIZE);
