@@ -261,7 +261,7 @@ int main()
 
         // Get first packet
         char packet[20];
-        valread = read(client_sock, packet, packetSize);
+        read(client_sock, packet, packetSize);
 
         // Print first packet
         printPacket(packet, numPackets, 'r');
@@ -278,16 +278,16 @@ int main()
         while (totalPackets > 0)
         {
             // Get packet
-            valread = read(client_sock, packet[numPackets], packetSize);
+            read(client_sock, packet, packetSize);
 
             // Print Packet
-            printPacket(packet[numPackets], numPackets, 'r');
+            printPacket(packet, numPackets, 'r');
 
             // Decrypt the Packet
-            xorPacket(packet[numPackets], thekey);
+            xorPacket(packet, thekey);
 
             // Write to file
-            fwrite(packet[numPackets], 1, packetSize, pFile);
+            fwrite(packet, 1, packetSize, pFile);
 
             numPackets++;
             totalPackets--;
