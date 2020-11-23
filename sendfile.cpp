@@ -149,6 +149,13 @@ int main()
             }
 
             // Convert t to 4 byte number and add to packet
+            char sizeToSend[4 + sizeof(char)];
+            sprintf(sizeToSend, "%d", t);
+
+            for (int i = 0; i < 4; i++)
+            {
+                packet[i] = sizeToSend[i];
+            }
 
             // Encrypt Packet
             xorPacket(packet, thekey, t);
