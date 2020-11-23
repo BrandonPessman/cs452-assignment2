@@ -245,10 +245,10 @@ int main()
         FILE *pFile;
         pFile = fopen("/tmp/pessman-2M", "w");
 
-        char packet[maxPacketSize + 4];
-        bzero(packet, maxPacketSize + 4);
+        char packet[10 + 4];
+        bzero(packet, 10 + 4);
         // Read all the packets
-        while ((valread = read(client_sock, packet, maxPacketSize + 4)) > 0)
+        while ((valread = read(client_sock, packet, 10 + 4)) > 0)
         {
             // Get Size from Header
             char packetWriteSize[4];
@@ -257,7 +257,7 @@ int main()
                 packetWriteSize[i] = packet[i];
             }
             int sz = atoi(packetWriteSize);
-            cout << "Size: " << sz;
+
             // Print Packet
             printPacket(packet, numPackets, 'r', sz);
 
@@ -273,7 +273,7 @@ int main()
 
             numPackets++;
             totalPackets--;
-            bzero(packet, maxPacketSize + 4);
+            bzero(packet, 10 + 4);
         }
 
         // Recieve Success
