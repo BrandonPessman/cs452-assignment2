@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 #define PACKET_MAX_SIZE 5
-#define TOTAL_PACKET_MAX_SIZE 5
+#define TOTAL_PACKET_MAX_SIZE 10
 
 using namespace std;
 
