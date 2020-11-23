@@ -250,6 +250,13 @@ int main()
             xorPacket(packet, thekey, 20);
 
             // Write to file
+            char packetWriteSize[4];
+            for (int i = 0; i < 4; i++)
+            {
+                packetWriteSize[i] = packet[i];
+            }
+            int sz = atoi(packetWriteSize);
+            printf("%d\n", sz);
             char packetWrite[20];
             for (int i = 0; i < 20; i++)
             {
