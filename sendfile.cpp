@@ -18,12 +18,12 @@ using namespace std;
  * p3 is 10.35.195.236
  */
 
-void xorPacket(char* packet, char key[], int packetSize)
+void xorPacket(char *packet, char key[], int packetSize)
 {
     // Encrypt or decrypt
     for (int i = 0; i < packetSize; i++)
     {
-        packet[i] = packet[i] ^ key[i % strlen(key)];
+        packet[i + 4] = packet[i + 4] ^ key[i % strlen(key)];
     }
 }
 
@@ -42,11 +42,11 @@ void printPacket(char packet[], int index, char type, int packetSize)
     }
 
     // Printing
-    printf("%02X\0", packet[0]);
-    printf("%02X\0", packet[1]);
+    printf("%02X\0", packet[0 + 4]);
+    printf("%02X\0", packet[1 + 4]);
     cout << " ... ";
-    printf("%02X\0", packet[packetSize - 2]);
-    printf("%02X\0", packet[packetSize - 1]);
+    printf("%02X\0", packet[packetSize + 4 - 2]);
+    printf("%02X\0", packet[packetSize + 4 - 1]);
     cout << endl;
 }
 
@@ -133,7 +133,9 @@ int main()
             totalPackets++;
         }
 
-        char packet[packetSize];
+        // Init Packet with 4 byte header
+        char packet[packetSize + 4];
+
         for (int i = 0; i < totalPackets; i++)
         {
             int t = packetSize;
@@ -143,8 +145,10 @@ int main()
             }
             for (int j = 0; j < t; j++)
             {
-                packet[j] = (char)fgetc(pFile);
+                packet[j + 4] = (char)fgetc(pFile);
             }
+
+            // Convert t to 4 byte number and add to packet
 
             // Encrypt Packet
             xorPacket(packet, thekey, t);
@@ -153,10 +157,10 @@ int main()
             printPacket(packet, numPackets, 's', packetSize);
 
             // Write Packet
-            write(sockfd, packet, t);
-    
+            write(sockfd, packet, t + 4);
+
             numPackets++;
-            bzero(packet, packetSize);
+            bzero(packet, packetSize + 4);
         }
 
         cout << "Send Success!" << endl;
@@ -234,10 +238,10 @@ int main()
         FILE *pFile;
         pFile = fopen("/tmp/pessman-2M", "w");
 
-        char packet[20];
-        //bzero(packet, 20);
-        // // Read all the packets
-        while ((valread = read(client_sock, packet, packetSize)) > 0)
+        char packet[20 + 4];
+        bzero(packet, 20 + 4);
+        // Read all the packets
+        while ((valread = read(client_sock, packet, packetSize + 4)) > 0)
         {
             // Print Packet
             printPacket(packet, numPackets, 'r', 20);
@@ -250,7 +254,7 @@ int main()
 
             numPackets++;
             totalPackets--;
-            bzero(packet, 20);
+            bzero(packet, 20 + 4);
         }
 
         // Recieve Success
