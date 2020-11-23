@@ -260,7 +260,7 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get first packet
-        char packet[packetSize];
+        char packet[20];
         valread = read(client_sock, packet, packetSize);
 
         // Print first packet
@@ -275,23 +275,23 @@ int main()
         numPackets++;
 
         // // Read all the packets
-        // while (totalPackets > 0)
-        // {
-        //     // Get packet
-        //     valread = read(client_sock, packet[numPackets], packetSize);
+        while (totalPackets > 0)
+        {
+            // Get packet
+            valread = read(client_sock, packet[numPackets], packetSize);
 
-        //     // Print Packet
-        //     printPacket(packet[numPackets], numPackets, 'r');
+            // Print Packet
+            printPacket(packet[numPackets], numPackets, 'r');
 
-        //     // Decrypt the Packet
-        //     xorPacket(packet[numPackets], thekey);
+            // Decrypt the Packet
+            xorPacket(packet[numPackets], thekey);
 
-        //     // Write to file
-        //     fwrite(packet[numPackets], 1, packetSize, pFile);
+            // Write to file
+            fwrite(packet[numPackets], 1, packetSize, pFile);
 
-        //     numPackets++;
-        //     totalPackets--;
-        // }
+            numPackets++;
+            totalPackets--;
+        }
 
         // Recieve Success
         cout << "Recieve Success!" << endl;
