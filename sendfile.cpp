@@ -250,22 +250,22 @@ int main()
         // Read all the packets
         while ((valread = read(client_sock, packet, packetSize + 4)) > 0)
         {
-            // Print Packet
-            printPacket(packet, numPackets, 'r', 20);
-
-            // Decrypt the Packet
-            xorPacket(packet, thekey, 20);
-
-            // Write to file
+            // Get Size from Header
             char packetWriteSize[4];
             for (int i = 0; i < 4; i++)
             {
                 packetWriteSize[i] = packet[i];
             }
             int sz = atoi(packetWriteSize);
-            printf("%d\n", sz);
+
+            // Print Packet
+            printPacket(packet, numPackets, 'r', 20);
+
+            // Decrypt the Packet
+            xorPacket(packet, thekey, 20);
+
             char packetWrite[20];
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < sz; i++)
             {
                 packetWrite[i] = packet[i + 4];
             }
