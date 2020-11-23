@@ -139,16 +139,6 @@ int main()
             totalPackets++;
         }
 
-        cout << "================================" << endl;
-        // Send packet size first
-        cout << "Packet Size: " << packetSize << endl;
-        write(sockfd, &packetSize, sizeof(packetSize));
-
-        // Send Total Packets
-        write(sockfd, &totalPackets, sizeof(totalPackets));
-        cout << "Total Packets: " << totalPackets << endl;
-        cout << "================================" << endl;
-
         char packet[packetSize];
         for (int i = 0; i < totalPackets; i++)
         {
@@ -198,7 +188,7 @@ int main()
         char port[20];
         char saveFile[100];
         char encryptKey[100];
-        int packetSize;
+        int packetSize = 20;
         int totalPackets;
         int leftOverPacket = 0;
         int valread;
@@ -245,41 +235,14 @@ int main()
             return 0;
         }
 
-        cout << "================================" << endl;
-        // Get Packet Size
-        read(client_sock, &packetSize, 100);
-        cout << "Packet Size: " << packetSize << endl;
-
-        // Get Total Packets
-        read(client_sock, &totalPackets, 100);
-        cout << "Total Packets: " << totalPackets << endl;
-        cout << "================================" << endl;
-
         // Open a file
         FILE *pFile;
         pFile = fopen("/tmp/pessman-2M", "w");
 
-        // Get first packet
         char packet[20];
-        read(client_sock, packet, packetSize);
-
-        // Print first packet
-        printPacket(packet, numPackets, 'r');
-
-        // Decrypt First Packet
-        xorPacket(packet, thekey);
-
-        // Write First Packet to File
-        fwrite(packet, 1, packetSize, pFile);
-
-        numPackets++;
-
         // // Read all the packets
-        while (totalPackets > 0)
+        while ((valread = read(client_sock, packet, packetSize)) > 0)
         {
-            // Get packet
-            read(client_sock, packet, packetSize);
-
             // Print Packet
             printPacket(packet, numPackets, 'r');
 
