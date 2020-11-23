@@ -95,7 +95,7 @@ int main()
 
         // Client address initialization
         client_addr.sin_family = AF_INET;
-        client_addr.sin_port = htons(port);
+        client_addr.sin_port = htons(atoi(port));
         client_addr.sin_addr.s_addr = inet_addr(ip);
         inet_pton(AF_INET, ip, &client_addr.sin_addr);
 
@@ -229,7 +229,7 @@ int main()
         // Server address initialization
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        serv_addr.sin_port = htons(port);
+        serv_addr.sin_port = htons(atoi(port));
 
         // Open the socket
         int sockfd = socket(AF_INET, SOCK_STREAM, 0);
