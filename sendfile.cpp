@@ -197,8 +197,8 @@ int main()
         // Initialize variables
         char ip[20];
         char port[20];
-        char saveFile[20];
-        char encryptKey[20];
+        char saveFile[100];
+        char encryptKey[100];
         int packetSize;
         int totalPackets;
         int leftOverPacket = 0;
@@ -261,7 +261,7 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get first packet
-        char packet[totalPackets + 1][packetSize];
+        char packet[totalPackets][packetSize];
         valread = read(client_sock, packet[0], packetSize);
 
         // Print first packet
@@ -275,24 +275,24 @@ int main()
 
         numPackets++;
 
-        // Read all the packets
-        while (totalPackets > 0)
-        {
-            // Get packet
-            valread = read(client_sock, packet[numPackets], packetSize);
+        // // Read all the packets
+        // while (totalPackets > 0)
+        // {
+        //     // Get packet
+        //     valread = read(client_sock, packet[numPackets], packetSize);
 
-            // Print Packet
-            printPacket(packet[numPackets], numPackets, 'r');
+        //     // Print Packet
+        //     printPacket(packet[numPackets], numPackets, 'r');
 
-            // Decrypt the Packet
-            xorPacket(packet[numPackets], thekey);
+        //     // Decrypt the Packet
+        //     xorPacket(packet[numPackets], thekey);
 
-            // Write to file
-            fwrite(packet[numPackets], 1, packetSize, pFile);
+        //     // Write to file
+        //     fwrite(packet[numPackets], 1, packetSize, pFile);
 
-            numPackets++;
-            totalPackets--;
-        }
+        //     numPackets++;
+        //     totalPackets--;
+        // }
 
         // Recieve Success
         cout << "Recieve Success!" << endl;
