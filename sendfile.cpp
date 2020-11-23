@@ -285,7 +285,10 @@ int main()
             int sz = atoi(packetWriteSize);
 
             // Print Packet
-            printPacket(packet, numPackets, 'r', sz);
+            if (numPackets == 0 || numPackets == 1 || numPackets == totalPackets - 2 || numPackets == totalPackets - 1)
+            {
+                printPacket(packet, numPackets, 'r', sz);
+            }
 
             // Decrypt the Packet
             xorPacket(packet, thekey, sz);
