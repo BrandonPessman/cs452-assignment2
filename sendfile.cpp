@@ -161,7 +161,7 @@ int main()
             xorPacket(packet, thekey, t);
 
             // Print Packet
-            printPacket(packet, numPackets, 's', packetSize);
+            printPacket(packet, numPackets, 's', t);
 
             // Write Packet
             write(sockfd, packet, t + 4);
