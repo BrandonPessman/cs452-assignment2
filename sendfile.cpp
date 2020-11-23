@@ -210,7 +210,6 @@ int main()
         char saveFile[100];
         char encryptKey[100];
         int maxPacketSize = 1000;
-        int totalPackets;
         int leftOverPacket = 0;
         int valread;
         int numPackets = 0;
