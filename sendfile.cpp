@@ -18,7 +18,7 @@ using namespace std;
  * p3 is 10.35.195.236
  */
 
-char *xorPacket(char packet[], char key[])
+void xorPacket(char packet[], char key[])
 {
     // Calculate length of packet
     int length = strlen(packet);
@@ -26,7 +26,7 @@ char *xorPacket(char packet[], char key[])
     // Encrypt or decrypt
     for (int i = 0; i < length; i++)
     {
-        packet[i] = packet[i] ^ key[i % strlen(keylength)];
+        packet[i] = packet[i] ^ key[i % strlen(key)];
     }
 
     return packet;
@@ -166,7 +166,7 @@ int main()
             }
 
             // Encrypt Packet
-            packet[i] = xorPacket(packet[i], thekey);
+            xorPacket(packet[i], thekey);
 
             // Print Packet
             printPacket(packet[i], numPackets, 's');
@@ -263,17 +263,17 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get first packet
-        char data[totalPackets + 1][packetSize];
-        valread = read(client_sock, data[0], packetSize);
+        char packet[totalPackets + 1][packetSize];
+        valread = read(client_sock, packet[0], packetSize);
 
         // Print first packet
-        printPacket(data[0], numPackets, 'r');
+        printPacket(packet[0], numPackets, 'r');
 
         // Decrypt First Packet
-        packet = xorPacket(data[0], thekey);
+        xorPacket(packet[0], thekey);
 
         // Write First Packet to File
-        fwrite(data[0], 1, packetSize, pFile);
+        fwrite(packet[0], 1, packetSize, pFile);
 
         numPackets++;
 
@@ -281,16 +281,16 @@ int main()
         while (totalPackets > 0)
         {
             // Get packet
-            valread = read(client_sock, data[numPackets], packetSize);
+            valread = read(client_sock, packet[numPackets], packetSize);
 
             // Print Packet
-            printPacket(data[numPackets], numPackets, 'r');
+            printPacket(packet[numPackets], numPackets, 'r');
 
-            // Decrypt the data
-            packet = xorPacket(data[numPackets], thekey);
+            // Decrypt the Packet
+            xorPacket(packet[numPackets], thekey);
 
             // Write to file
-            fwrite(data[i], 1, packetSize, pFile);
+            fwrite(packet[numPackets], 1, packetSize, pFile);
 
             numPackets++;
             totalPackets--;
