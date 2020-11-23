@@ -302,7 +302,6 @@ int main()
             fwrite(packetWrite, 1, sz, pFile);
 
             numPackets++;
-            totalPackets--;
             bzero(packet, maxPacketSize + PACKET_MAX_SIZE);
         }
 
