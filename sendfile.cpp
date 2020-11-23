@@ -138,7 +138,7 @@ int main()
 
         // Convert t to 4 byte number and add to packet
         char packetSizeToSend[4 + sizeof(char)];
-        sprintf(packetSizeToSend, "%d", 4);
+        sprintf(packetSizeToSend, "%d", packetSize);
 
         // Send Size
         write(sockfd, packetSizeToSend, 4);
