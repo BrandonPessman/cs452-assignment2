@@ -251,7 +251,7 @@ int main()
 
             // Write to file
             char packetWrite[20];
-            for (let i = 0; i < 20; i++)
+            for (int i = 0; i < 20; i++)
             {
                 packetWrite[i] = packet[i + 4];
             }
