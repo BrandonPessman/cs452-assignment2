@@ -191,7 +191,8 @@ int main()
 
         // MD5 Hash
         cout << "MD5: " << endl;
-        system(strcat("md5sum ", sendFile));
+        char sys[200] = "md5sum ";
+        system(strcat(sys, sendFile));
 
         // Close the Socket
         close(sockfd);
@@ -311,7 +312,7 @@ int main()
 
         // MD5 Hash
         cout << "MD5: " << endl;
-        char sys[200] = "md5sum";
+        char sys[200] = "md5sum ";
         system(strcat(sys, saveFile));
 
         // Close socket
