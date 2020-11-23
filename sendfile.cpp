@@ -9,7 +9,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 
-#define PACKET_MAX_SIZE 4;
+#define PACKET_MAX_SIZE 4
 
 using namespace std;
 
