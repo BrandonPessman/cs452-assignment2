@@ -9,8 +9,8 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 
-#define PACKET_MAX_SIZE 4
-#define TOTAL_PACKET_MAX_SIZE 4
+#define PACKET_MAX_SIZE 5
+#define TOTAL_PACKET_MAX_SIZE 5
 
 using namespace std;
 
@@ -82,10 +82,10 @@ int main()
         int numPackets = 0;
 
         // Gather information
-        //cout << "Connect to IP address: ";
-        //cin >> ip;
-        //cout << "Port #: ";
-        //cin >> port;
+        cout << "Connect to IP address: ";
+        cin >> ip;
+        cout << "Port #: ";
+        cin >> port;
         cout << "File to be sent: ";
         cin >> sendFile;
         cout << "Pkt size: ";
@@ -95,9 +95,9 @@ int main()
 
         // Client address initialization
         client_addr.sin_family = AF_INET;
-        client_addr.sin_port = htons(9271);
-        client_addr.sin_addr.s_addr = inet_addr("10.35.195.250");
-        inet_pton(AF_INET, "10.35.195.250", &client_addr.sin_addr);
+        client_addr.sin_port = htons(port);
+        client_addr.sin_addr.s_addr = inet_addr(ip);
+        inet_pton(AF_INET, ip, &client_addr.sin_addr);
 
         // Open the socket
         int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -202,7 +202,6 @@ int main()
     if (mode[0] == 's')
     {
         // Server Settings
-        int serve_sock = 9271;
         struct sockaddr_in serv_addr, client_addr;
         int addrlen = sizeof(client_addr);
 
@@ -218,10 +217,10 @@ int main()
         int totalPackets = 0;
 
         // Gather information
-        //cout << "Connect to IP address: ";
-        //cin >> ip;
-        //cout << "Port #: ";
-        //cin >> port;
+        cout << "Connect to IP address: ";
+        cin >> ip;
+        cout << "Port #: ";
+        cin >> port;
         cout << "Save file to: ";
         cin >> saveFile;
         cout << "Enter encryption key: ";
@@ -230,7 +229,7 @@ int main()
         // Server address initialization
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        serv_addr.sin_port = htons(serve_sock);
+        serv_addr.sin_port = htons(port);
 
         // Open the socket
         int sockfd = socket(AF_INET, SOCK_STREAM, 0);
