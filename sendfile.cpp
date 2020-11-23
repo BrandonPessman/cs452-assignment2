@@ -276,6 +276,7 @@ int main()
         // Read all the packets
         while ((valread = read(client_sock, packet, maxPacketSize + PACKET_MAX_SIZE)) > 0)
         {
+            cout << "Total Packets: " << totalPackets << endl;
             // Get Size from Header
             char packetWriteSize[PACKET_MAX_SIZE];
             for (int i = 0; i < PACKET_MAX_SIZE; i++)
