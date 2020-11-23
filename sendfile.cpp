@@ -250,7 +250,12 @@ int main()
             xorPacket(packet, thekey, 20);
 
             // Write to file
-            fwrite(packet, 1, 20, pFile);
+            char packetWrite[20];
+            for (let i = 0; i < 20; i++)
+            {
+                packetWrite[i] = packet[i + 4];
+            }
+            fwrite(packetWrite, 1, 20, pFile);
 
             numPackets++;
             totalPackets--;
