@@ -136,6 +136,12 @@ int main()
         // Init Packet with 4 byte header
         char packet[packetSize + 4];
 
+        // Convert t to 4 byte number and add to packet
+        char packetSizeToSend[4 + sizeof(char)];
+        sprintf(packetSizeToSend, "%d", 4);
+        // Send Size
+        write(sockfd, packetSizeToSend, 4);
+
         for (int i = 0; i < totalPackets; i++)
         {
             int t = packetSize;
@@ -245,10 +251,15 @@ int main()
         FILE *pFile;
         pFile = fopen("/tmp/pessman-2M", "w");
 
-        char packet[10 + 4];
-        bzero(packet, 10 + 4);
+        // Get Packet Size
+        char data[4];
+        read(client_sock, data, 4);
+        maxPacketSize = atoi(data);
+
+        char packet[maxPacketSize + 4];
+        bzero(packet, maxPacketSize + 4);
         // Read all the packets
-        while ((valread = read(client_sock, packet, 10 + 4)) > 0)
+        while ((valread = read(client_sock, packet, maxPacketSize + 4)) > 0)
         {
             // Get Size from Header
             char packetWriteSize[4];
@@ -273,7 +284,7 @@ int main()
 
             numPackets++;
             totalPackets--;
-            bzero(packet, 10 + 4);
+            bzero(packet, maxPacketSize + 4);
         }
 
         // Recieve Success
