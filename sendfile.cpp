@@ -262,7 +262,7 @@ int main()
 
         // Get first packet
         char packet[totalPackets][packetSize];
-        valread = read(client_sock, packet[0], packetSize);
+        valread = read(client_sock, &packet[0], packetSize);
 
         // Print first packet
         printPacket(packet[0], numPackets, 'r');
