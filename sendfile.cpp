@@ -259,17 +259,17 @@ int main()
             int sz = atoi(packetWriteSize);
 
             // Print Packet
-            printPacket(packet, numPackets, 'r', 20);
+            printPacket(packet, numPackets, 'r', sz);
 
             // Decrypt the Packet
-            xorPacket(packet, thekey, 20);
+            xorPacket(packet, thekey, sz);
 
-            char packetWrite[20];
+            char packetWrite[sz];
             for (int i = 0; i < sz; i++)
             {
                 packetWrite[i] = packet[i + 4];
             }
-            fwrite(packetWrite, 1, 20, pFile);
+            fwrite(packetWrite, 1, sz, pFile);
 
             numPackets++;
             totalPackets--;
