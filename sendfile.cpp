@@ -18,13 +18,10 @@ using namespace std;
  * p3 is 10.35.195.236
  */
 
-void xorPacket(char packet[], char key[])
+void xorPacket(char* packet, char key[], int packetSize)
 {
-    // Calculate length of packet
-    int length = strlen(packet);
-
     // Encrypt or decrypt
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < packetSize; i++)
     {
         packet[i] = packet[i] ^ key[i % strlen(key)];
     }
@@ -150,7 +147,7 @@ int main()
             }
 
             // Encrypt Packet
-            //xorPacket(packet, thekey);
+            xorPacket(packet, thekey, packetSize);
 
             // Print Packet
             printPacket(packet, numPackets, 's', packetSize);
@@ -246,7 +243,7 @@ int main()
             printPacket(packet, numPackets, 'r', 20);
 
             // Decrypt the Packet
-            //xorPacket(packet, thekey);
+            xorPacket(packet, thekey, 20);
 
             // Write to file
             fwrite(packet, 1, packetSize, pFile);
