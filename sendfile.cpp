@@ -42,11 +42,11 @@ void printPacket(char packet[], int index, char type, int packetSize)
     }
 
     // Printing
-    printf("%02X", packet[0]);
-    printf("%02X", packet[1]);
+    printf("%02X\0", packet[0]);
+    printf("%02X\0", packet[1]);
     cout << " ... ";
-    printf("%02X", packet[packetSize - 2]);
-    printf("%02X", packet[packetSize - 1]);
+    printf("%02X\0", packet[packetSize - 2]);
+    printf("%02X\0", packet[packetSize - 1]);
     cout << endl;
 }
 
@@ -147,7 +147,7 @@ int main()
             }
 
             // Encrypt Packet
-            xorPacket(packet, thekey, packetSize);
+            xorPacket(packet, thekey, t);
 
             // Print Packet
             printPacket(packet, numPackets, 's', packetSize);
@@ -160,7 +160,7 @@ int main()
         }
 
         cout << "Send Success!" << endl;
-        write(sockfd, "", 0);
+        //write(sockfd, "", 0);
 
         // MD5 Hash
         cout << "MD5: " << endl;
@@ -235,7 +235,7 @@ int main()
         pFile = fopen("/tmp/pessman-2M", "w");
 
         char packet[20];
-        bzero(packet, 20);
+        //bzero(packet, 20);
         // // Read all the packets
         while ((valread = read(client_sock, packet, packetSize)) > 0)
         {
@@ -246,7 +246,7 @@ int main()
             xorPacket(packet, thekey, 20);
 
             // Write to file
-            fwrite(packet, 1, packetSize, pFile);
+            fwrite(packet, 1, 20, pFile);
 
             numPackets++;
             totalPackets--;
