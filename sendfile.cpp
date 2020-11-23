@@ -194,7 +194,7 @@ int main()
         char port[20];
         char saveFile[100];
         char encryptKey[100];
-        int packetSize = 20;
+        int maxPacketSize = 20;
         int totalPackets;
         int leftOverPacket = 0;
         int valread;
@@ -245,10 +245,10 @@ int main()
         FILE *pFile;
         pFile = fopen("/tmp/pessman-2M", "w");
 
-        char packet[20 + 4];
-        bzero(packet, 20 + 4);
+        char packet[maxPacketSize + 4];
+        bzero(packet, maxPacketSize + 4);
         // Read all the packets
-        while ((valread = read(client_sock, packet, packetSize + 4)) > 0)
+        while ((valread = read(client_sock, packet, maxPacketSize + 4)) > 0)
         {
             // Get Size from Header
             char packetWriteSize[4];
@@ -273,7 +273,7 @@ int main()
 
             numPackets++;
             totalPackets--;
-            bzero(packet, 20 + 4);
+            bzero(packet, maxPacketSize + 4);
         }
 
         // Recieve Success
