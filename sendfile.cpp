@@ -194,7 +194,7 @@ int main()
         char port[20];
         char saveFile[100];
         char encryptKey[100];
-        int maxPacketSize = 20;
+        int maxPacketSize = 1000;
         int totalPackets;
         int leftOverPacket = 0;
         int valread;
@@ -257,7 +257,7 @@ int main()
                 packetWriteSize[i] = packet[i];
             }
             int sz = atoi(packetWriteSize);
-
+            cout << "Size: " << sz;
             // Print Packet
             printPacket(packet, numPackets, 'r', sz);
 
