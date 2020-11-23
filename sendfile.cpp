@@ -86,8 +86,8 @@ int main()
         //cin >> port;
         //cout << "File to be sent: ";
         //cin >> sendFile;
-        //cout << "Pkt size: ";
-        //cin >> packetSize;
+        cout << "Pkt size: ";
+        cin >> packetSize;
         //cout << "Enter encryption key: ";
         //cin >> encryptKey;
 
