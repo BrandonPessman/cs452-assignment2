@@ -18,36 +18,39 @@ using namespace std;
  * p3 is 10.35.195.236
  */
 
-void xorPacket(char packet[], char key[]) {
+char *xorPacket(char packet[], char key[])
+{
     // Calculate length of packet
     int length = strlen(packet);
-    int keylength = strlen(key);
 
     // Encrypt or decrypt
-    for (int i = 0; i < length; i++) {
-        packet[i] = packet[i] ^ key[i % keylength];
+    for (int i = 0; i < length; i++)
+    {
+        packet[i] = packet[i] ^ key[i % strlen(keylength)];
     }
-    packet[length] = '\0';
 
-    //return packet;
+    return packet;
 }
 
-void printPacket(char packet[], int index,  char type) {
+void printPacket(char packet[], int index, char type)
+{
     // Get size
     int length = strlen(packet);
-    
+
     // Sent packet
-    if (type == 's') {
+    if (type == 's')
+    {
         cout << "Sent encrypted packet #" << index << " - encrypted as ";
     }
 
     // Recieve packet
-    if (type == 'r') {
+    if (type == 'r')
+    {
         cout << "Rec encrypted packet #" << index << " - encrypted as ";
     }
 
     // Printing
-    printf("%02X", packet[0]);    
+    printf("%02X", packet[0]);
     printf("%02X", packet[1]);
     cout << " ... ";
     printf("%02X", packet[length - 2]);
@@ -55,18 +58,21 @@ void printPacket(char packet[], int index,  char type) {
     cout << endl;
 }
 
-void packetToString(char packet[]) {
-    cout << "[Packet Data]: " << packet << "\0" << endl;
+void packetToString(char packet[])
+{
+    cout << "[Packet Data]: " << packet << endl;
 }
 
-int main () {
+int main()
+{
     char mode[1];
 
     cout << "Type 'c' for client and 's' for server: ";
     cin >> mode;
 
     // Client Mode
-    if (mode[0] == 'c') {
+    if (mode[0] == 'c')
+    {
         // Client Settings
         struct sockaddr_in client_addr;
 
@@ -76,6 +82,10 @@ int main () {
         char sendFile[20];
         int packetSize = 20;
         char encryptKey[20];
+        int totalPackets = 0;
+        int leftOverPacket = 0;
+        int numPackets = 0;
+        char thekey[] = "thekey";
 
         // Gather information
         //cout << "Connect to IP address: ";
@@ -91,171 +101,112 @@ int main () {
 
         // Client address initialization
         client_addr.sin_family = AF_INET;
-        client_addr.sin_port = htons(9611);
+        client_addr.sin_port = htons(9271);
         client_addr.sin_addr.s_addr = inet_addr("10.35.195.250");
         inet_pton(AF_INET, "10.35.195.250", &client_addr.sin_addr);
 
         // Open the socket
         int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-        if (sockfd < 0) {
+        if (sockfd < 0)
+        {
             perror("Socket Creation");
             return 0;
         }
 
-        cout << "Socket Open Complete!" << endl;
-
         // Connect socket
-        if (connect(sockfd,(struct sockaddr*) &client_addr, sizeof(client_addr)) < 0) {
+        if (connect(sockfd, (struct sockaddr *)&client_addr, sizeof(client_addr)) < 0)
+        {
             perror("Connect");
             return 0;
         }
 
-        cout << "Socket Connected!" << endl;
-
         // Get File
-        FILE *pFile = fopen("pessman.txt", "r");
+        FILE *pFile = fopen("/tmp/2M", "r");
         fseek(pFile, 0, SEEK_END);
         long fileSize = ftell(pFile);
         cout << "File Size: " << fileSize << " bytes." << endl;
         rewind(pFile);
-        
-        cout << "================================" << endl;
-        // Send packet size first
-        cout << "Packet Size: " << packetSize << endl;
-        write(sockfd, &packetSize, sizeof(packetSize));
 
-        // Setup packets
-        int totalPackets = 0;
-        int leftOverPacket = 0;
-        while(fileSize >= packetSize) {
-            totalPackets++;
+        // Calculate Packets from file size
+        while (fileSize >= packetSize)
+        {
             fileSize -= packetSize;
+            totalPackets++;
         }
 
-        if (fileSize != 0) {
+        // Adds an extra packet if there is less than a packet
+        if (fileSize != 0)
+        {
             leftOverPacket = fileSize;
             totalPackets++;
         }
 
         char packet[totalPackets][packetSize];
-        char lastPacket[leftOverPacket];
 
-        char thekey[] = "thekey";
-        //char *packet = new char[packetSize];
-        //int i = 0;
-        int numPackets = 0;
-    
+        cout << "================================" << endl;
+        // Send packet size first
+        cout << "Packet Size: " << packetSize << endl;
+        write(sockfd, &packetSize, sizeof(packetSize));
 
         // Send Total Packets
         write(sockfd, &totalPackets, sizeof(totalPackets));
         cout << "Total Packets: " << totalPackets << endl;
-
-        // Send Final Packet Size
-        //write(sockfd, &leftOverPacket, sizeof(leftOverPacket));
-        //cout << "Packet Extra: " << leftOverPacket << endl;
-
         cout << "================================" << endl;
 
-        for (int i = 0; i < totalPackets; i++) {
-            for (int j = 0; j < packetSize; j++) {
-                packet[i][j] = (char) fgetc(pFile);
+        for (int i = 0; i < totalPackets; i++)
+        {
+            int t = packetSize;
+            if (i == totalPackets - 1 && leftOverPacket != 0)
+            {
+                t = leftOverPacket;
             }
-            
+            for (int j = 0; j < t; j++)
+            {
+                packet[i][j] = (char)fgetc(pFile);
+            }
+
             // Encrypt Packet
-            xorPacket(packet[i], thekey);
+            packet[i] = xorPacket(packet[i], thekey);
 
             // Print Packet
             printPacket(packet[i], numPackets, 's');
 
             // Write Packet
-            write(sockfd, packet[i], packetSize);
-            
-            numPackets++;
-        }
-
-        if (leftOverPacket != 0) {
-            for (int i = 0; i < leftOverPacket; i++) {
-                lastPacket[i] = (char) fgetc(pFile);
-            }
-            lastPacket[leftOverPacket] = '\0';
-
-            // Encrypt Packet
-            xorPacket(lastPacket, thekey);
-            
-            // Print Packet
-            printPacket(lastPacket, numPackets, 's');
-
-            // Write Packet
-            write(sockfd, lastPacket, leftOverPacket);
+            write(sockfd, packet[i], t);
 
             numPackets++;
         }
 
-/*    
-        int c;
-        while ((c = fgetc(pFile)) != EOF) {
-            packet[i] = (char) c;
-            i++;
-
-            if (i == packetSize) {
-                // Print string
-                //packetToString(packet);
-
-                // Encrypt Packet
-                packet = xorPacket(packet, thekey);
-
-                // Print packet
-                printPacket(packet, numPackets,  's');
-
-                // Decrypt Packet
-                packet = xorPacket(packet, thekey);
-                //printPacket(packet, numPackets, 's');
-                packetToString(packet);
-                // Send Packet
-                //write(sockfd, packet, packetSize);
-                
-                // Reset
-                i = 0;
-                numPackets++;
-            }
-        }
-
-        // Check for last packet
-        if (i != 0) {
-            //packetToString(packet);
-
-            // Encrypt last packet
-            packet = xorPacket(packet, thekey);
-
-            // Print packet
-            printPacket(packet, numPackets, 's');
-
-            // Send Packet
-            //write(sockfd, packet, packetSize);
-        }
-*/
         cout << "Send Success!" << endl;
-        write(sockfd, "", 0);
+        //write(sockfd, "", 0);
+
         // MD5 Hash
         cout << "MD5: " << endl;
-        system("md5sum pessman.txt");
+        system("md5sum /tmp/2M");
 
         // Close the Socket
         close(sockfd);
     }
 
     // Server Mode
-    if (mode[0] == 's') {
+    if (mode[0] == 's')
+    {
         // Server Settings
-        int serve_sock = 9611;
+        int serve_sock = 9271;
         struct sockaddr_in serv_addr, client_addr;
         int addrlen = sizeof(client_addr);
-    
+
         // Initialize variables
         char ip[20];
         char port[20];
         char saveFile[20];
         char encryptKey[20];
+        int packetSize;
+        int totalPackets;
+        int leftOverPacket = 0;
+        int valread;
+        int numPackets = 0;
+        char thekey[] = "thekey";
 
         // Gather information
         //cout << "Connect to IP address: ";
@@ -266,7 +217,7 @@ int main () {
         //cin >> saveFile;
         //cout << "Enter encryption key: ";
         //cin >> encryptKey;
-        
+
         // Server address initialization
         serv_addr.sin_family = AF_INET;
         serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -274,36 +225,29 @@ int main () {
 
         // Open the socket
         int sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    
-        cout << "Socket Open Complete!" << endl;
 
         // Bind the socket
-        if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(struct sockaddr_in)) < 0) {
+        if (bind(sockfd, (struct sockaddr *)&serv_addr, sizeof(struct sockaddr_in)) < 0)
+        {
             perror("Bind Failed");
             return 0;
         }
 
-        cout << "Binding Complete!" << endl;
-
         // Set listen to 5 queued connections
-        if (listen(sockfd, 5) < 0) {
+        if (listen(sockfd, 5) < 0)
+        {
             perror("Listen Failed");
             return 0;
         }
 
-        cout << "Listen Complete!" << endl;
-
         // Accept a client connection
-        int client_sock = accept(sockfd, (struct sockaddr *)&client_addr, (socklen_t*)&addrlen);
-        if (client_sock < 0) {
+        int client_sock = accept(sockfd, (struct sockaddr *)&client_addr, (socklen_t *)&addrlen);
+        if (client_sock < 0)
+        {
             perror("Accept Failed");
             return 0;
         }
 
-        int packetSize;
-        int totalPackets;
-        int leftOverPacket = 0;
-    
         cout << "================================" << endl;
         // Get Packet Size
         read(client_sock, &packetSize, 100);
@@ -312,51 +256,43 @@ int main () {
         // Get Total Packets
         read(client_sock, &totalPackets, 100);
         cout << "Total Packets: " << totalPackets << endl;
-
-        // Get Packet Extra
-        //read(client_sock, &leftOverPacket, 100);
-        //cout << "Packet Extra: " << leftOverPacket << endl;
-
         cout << "================================" << endl;
 
         // Open a file
-//       FILE *pFile;
-//       pFile = fopen("pessman-write.txt", "w");
+        FILE *pFile;
+        pFile = fopen("/tmp/pessman-2M", "w");
 
         // Get first packet
-        char data[totalPackets+1][packetSize];
-        int valread;
-        int numPackets = 0;
-        char thekey[] = "thekey";
-
+        char data[totalPackets + 1][packetSize];
         valread = read(client_sock, data[0], packetSize);
-        
+
         // Print first packet
         printPacket(data[0], numPackets, 'r');
 
         // Decrypt First Packet
-        xorPacket(data[0], thekey);
+        packet = xorPacket(data[0], thekey);
 
         // Write First Packet to File
-//        fwrite(data, sizeof(char), sizeof(data), pFile);
-        
+        fwrite(data[0], 1, packetSize, pFile);
+
         numPackets++;
 
         // Read all the packets
-        while(totalPackets > 0) {
+        while (totalPackets > 0)
+        {
             // Get packet
             valread = read(client_sock, data[numPackets], packetSize);
-            
+
             // Print Packet
             printPacket(data[numPackets], numPackets, 'r');
 
             // Decrypt the data
-            xorPacket(data[numPackets], thekey);
+            packet = xorPacket(data[numPackets], thekey);
 
             // Write to file
-//            fwrite(data, sizeof(char), sizeof(data), pFile);
+            fwrite(data[i], 1, packetSize, pFile);
 
-            numPackets++;       
+            numPackets++;
             totalPackets--;
         }
 
@@ -364,14 +300,14 @@ int main () {
         cout << "Recieve Success!" << endl;
 
         // Close file
-//      fclose(pFile);
-        
+        fclose(pFile);
+
         // MD5 Hash
         cout << "MD5: " << endl;
-        system("md5sum pessman-write.txt");
+        system("md5sum /tmp/pessman-2M");
 
         // Close socket
-//        close(client_sock);
+        close(client_sock);
     }
 
     return 0;
